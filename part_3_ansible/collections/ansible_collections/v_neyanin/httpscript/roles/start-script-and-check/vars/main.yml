@@ -1,0 +1,4 @@
+---
+image_name: vadikneya/httpscript
+image_tag: v1.0.0
+container_name: http-test
