@@ -1,0 +1,16 @@
+---
+- name: Install docker
+  hosts: all
+  become: true
+  collections:
+    - v_neyanin.httpscript
+  roles:
+    - docker-install
+
+- name: Launch script
+  hosts: all
+  become: false
+  collections:
+    - v_neyanin.httpscript
+  roles:
+    - start-script-and-check

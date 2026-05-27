@@ -1,0 +1,26 @@
+---
+- name: Pull image
+  ansible.builtin.shell: "docker image inspect {{ image_name }}:{{ image_tag }} || docker pull {{ image_name }}:{{ image_tag }}"
+
+- name: Run container
+  ansible.builtin.command: docker run -d --name "{{ container_name }}" "{{ image_name }}:{{ image_tag }}"
+
+- name: Wait finish
+  ansible.builtin.command: docker wait "{{ container_name }}"
+  register: exit_code
+
+- name: Check stderr in logs
+  ansible.builtin.shell: docker logs "{{ container_name }}" 2>&1 1>/dev/null
+  register: stderr_output
+  failed_when: false
+
+- name: Cleanup
+  ansible.builtin.command: docker rm "{{ container_name }}"
+
+- name: Verify no errors
+  ansible.builtin.assert:
+    that:
+      - exit_code.stdout == "0"
+      - stderr_output.stdout == ""
+    success_msg: "OK"
+    fail_msg: "FAILED: {{ stderr_output.stdout }}"
